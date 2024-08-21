@@ -1,0 +1,33 @@
+import React from "react";
+export type Tree = {
+  name: string;
+  checked?: boolean;
+  children?: Tree[];
+};
+
+export const Tree = ({ name, children }: Tree) => {
+  const handleParentToggle = () => {};
+  const handleChildToggle = (id: number) => {};
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <input type="checkbox" checked={false} onChange={handleParentToggle} />
+        <span>{name}</span>
+      </div>
+      {children &&
+        children.map((child, index) => (
+          <div
+            key={`child-${index}`}
+            className="flex items-center gap-2 py-1 pl-6"
+          >
+            <input
+              type="checkbox"
+              checked={child.checked}
+              onChange={() => handleChildToggle(index)}
+            />
+            <span>{child.name}</span>
+          </div>
+        ))}
+    </div>
+  );
+};
