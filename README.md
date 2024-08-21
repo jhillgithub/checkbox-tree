@@ -1,5 +1,9 @@
 # Checkbox Tree
 
+## Live Demo
+
+[https://jhillgithub.github.io/checkbox-tree/](https://jhillgithub.github.io/checkbox-tree/)
+
 ## Install
 
 ```shell
