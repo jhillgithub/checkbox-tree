@@ -1,65 +1,51 @@
-import React, { useEffect, useRef, useState } from "react";
-export type Tree = {
-  name: string;
-  checked?: boolean;
-  children?: Tree[];
+import React from "react";
+import { useTreeContext, Tree as TreeType } from "../context/TreeContext";
+
+type TreeProps = {
+  id: string;
 };
 
-export const Tree = ({ name, children: initialChildren }: Tree) => {
-  const parentRef = useRef<HTMLInputElement>(null);
-  const [children, setChildren] = useState(
-    initialChildren?.map((child) => ({
-      ...child,
-      checked: child.checked ?? false,
-    })) || [],
-  );
-  const allChildrenChecked = children.every((child) => child.checked);
-  const someChildrenChecked = children.some((child) => child.checked);
-  const indeterminate = someChildrenChecked && !allChildrenChecked;
+export const Tree = ({ id }: TreeProps) => {
+  const { treeData, toggleNode } = useTreeContext();
 
-  useEffect(() => {
-    if (!parentRef.current) return;
-    parentRef.current.indeterminate = indeterminate;
-  }, [indeterminate]);
+  const findNode = (node: TreeType, targetId: string): TreeType | undefined => {
+    if (node.id === targetId) return node;
+    if (node.children) {
+      for (const child of node.children) {
+        const found = findNode(child, targetId);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
 
-  const handleParentToggle = () => {
-    setChildren(
-      children.map((child) => ({ ...child, checked: !allChildrenChecked })),
-    );
-  };
-  const handleChildToggle = (id: number) => {
-    setChildren(
-      children?.map((child, index) =>
-        index === id ? { ...child, checked: !child.checked } : child,
-      ),
-    );
-  };
+  if (!treeData) return null;
+  const node = findNode(treeData, id);
+  if (!node) return null;
 
   return (
-    <div>
-      <div className="flex items-center gap-2">
+    <div className="ml-4">
+      <label className="flex items-center">
         <input
-          ref={parentRef}
           type="checkbox"
-          checked={allChildrenChecked}
-          onChange={handleParentToggle}
+          checked={node.checked}
+          ref={(el) => {
+            if (el) {
+              el.indeterminate = node.indeterminate || false;
+            }
+          }}
+          onChange={() => toggleNode(id)}
+          className="mr-2"
         />
-        <span>{name}</span>
-      </div>
-      {children &&
-        children.map((child, index) => (
-          <div
-            key={`child-${index}`}
-            className="flex items-center gap-2 py-1 pl-6"
-          >
-            <input
-              type="checkbox"
-              checked={child.checked}
-              onChange={() => handleChildToggle(index)}
-            />
-            <span>{child.name}</span>
-          </div>
-        ))}
+        {node.name}
+      </label>
+      {node.children && (
+        <div className="ml-4">
+          {node.children.map((child) => (
+            <Tree key={child.id} id={child.id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -4,8 +4,21 @@
  */
 export const useFetchData = () => {
   const data = {
+    id: "1",
     name: "Parent",
-    children: [{ name: "Child 1" }, { name: "Child 2", checked: true }],
+    checked: false,
+    children: [
+      {
+        id: "2",
+        name: "Child 1",
+        checked: false,
+        children: [
+          { id: "3", name: "GrandChild 1", checked: false },
+          { id: "4", name: "GrandChild 2", checked: false },
+        ],
+      },
+      { id: "5", name: "Child 2", checked: true },
+    ],
   };
   return {
     loading: false,
